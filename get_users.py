@@ -24,6 +24,10 @@ from settings import TENANT_NAME, USERNAME, PASSWORD, REGION
 
 
 def get_admin_token():
+    """
+    Get the token id based on the credentials.
+    :return: Token id.
+    """
     print("Getting Admin token...")
 
     payload = {'auth': {'tenantName': TENANT_NAME,
@@ -40,6 +44,12 @@ def get_admin_token():
 
 
 def get_region_endpoint_group(region, token):
+    """
+    Get the region id associated to a region name
+    :param region: The name of a region in FIWARE Lab
+    :param token: The security token.
+    :return: The region id.
+    """
     print("Getting region id for region...")
 
     url = 'http://cloud.lab.fi-ware.org:4730/v3/OS-EP-FILTER/endpoint_groups'
@@ -56,6 +66,12 @@ def get_region_endpoint_group(region, token):
 
 
 def get_user_list_per_region(region_id, token):
+    """
+    Get the user list assigned in a region.
+    :param region_id: The region id.
+    :param token: Security token.
+    :return: pair (users, projects)
+    """
     print("Getting user list per project per region...")
 
     url = 'http://cloud.lab.fi-ware.org:4730/v3/OS-EP-FILTER/endpoint_groups/'\
@@ -80,6 +96,12 @@ def get_user_list_per_region(region_id, token):
 
 
 def count_users(user_list, token):
+    """
+    Get the number of Trial Community and Total users
+    :param user_list: List of users.
+    :param token: Token to consult the API.
+    :return: Number of Trial, Community, Other and Total users.
+    """
     print("Getting users count per type...")
 
     temporal = map(lambda x: type_user(x, token=token), user_list)
@@ -126,8 +148,15 @@ def type_user(user, token):
 
 
 def get_list_users_from_project(users, projects, token):
-    project_ids = [ x.get('id') for x in projects for y in users
-                    if x.get('name') == (y + ' cloud') or x.get('name') == (y + ' Cloud')]
+    """
+    Get the list of user in a project.
+    :param users: list of users
+    :param projects: list of projects
+    :param token: token to process API
+    :return: number of users
+    """
+    project_ids = [x.get('id') for x in projects for y in users
+                   if x.get('name') == (y + ' cloud') or x.get('name') == (y + ' Cloud')]
 
     temporal = map(lambda x: get_list_user_with_some_role(x, token=token), project_ids)
 
@@ -139,6 +168,13 @@ def get_list_users_from_project(users, projects, token):
 
 
 def get_list_user_with_some_role(project_id, token):
+    """
+    Return the list of user with a specific role associated to
+    a project if.
+    :param project_id: The project id from which get the list of users.
+    :param token: Securoty token to call the API.
+    :return: User list.
+    """
 
     url = 'http://cloud.lab.fi-ware.org:4730/v3/role_assignments?scope.project.id=' + project_id
 
